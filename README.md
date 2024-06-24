@@ -7,10 +7,9 @@ a simple 3d model viewer
 
 - render gltf/glb models
 - move camera along all axes
-- view controls in overlay
-
-**to-do:**
-
 - allow users to upload models
-- make it easier to control the camera and more intuitive to view models
-- branding & aesthetics
+- take file and url input
+- reference controls in overlay
+- compatible with vr & 2d ar
+
+*although deployed and fully usable, this project will continue to be improved. if you'd like to help, feel free to open a pull request :)*
