@@ -41,26 +41,65 @@
             align-items: center;
         }
 
-        #controls img {
-            width: 100px;
-            margin-bottom: 5px;
+        #input-section {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            background: #fff;
+            padding: 10px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            font-family: Arial, sans-serif;
         }
 
-        #controls div {
-            text-align: center;
+        #model-link {
+            width: 300px;
+            padding: 8px;
+            border: none;
+            border-radius: 5px;
+            margin-right: 10px;
+            font-size: 14px;
+        }
+
+        #render-button, #upload-button {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 5px;
+            background: #007bff;
+            color: white;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        #upload-button {
+            margin-right: 10px;
+            background: #28a745;
+        }
+
+        #render-button:hover, #upload-button:hover {
+            opacity: 0.9;
+        }
+
+        #upload-input {
+            display: none;
         }
     </style>
 </head>
 <body>
     <a-scene id="viewer" embedded>
         <a-assets>
+            <!-- Default model placeholder -->
             <a-asset-item id="defaultModel" src="https://cdn.aframe.io/examples/ar/models/triceratops/scene.gltf"></a-asset-item>
         </a-assets>
         
         <a-entity 
             gltf-model="#defaultModel" 
             position="0 1.6 -3" 
-            scale="0.05 0.05 0.05">
+            scale="0.05 0.05 0.05"
+            id="model">
         </a-entity>
         
         <a-entity 
@@ -78,7 +117,13 @@
         <div><b>Down Arrow:</b> Camera Back</div>
         <div><b>Q:</b> Camera Up</div>
         <div><b>E:</b> Camera Down</div>
+    </div>
 
+    <div id="input-section">
+        <button id="upload-button">Upload</button>
+        <input type="file" id="upload-input" accept=".gltf, .glb">
+        <input type="text" id="model-link" placeholder="Paste GLTF/GLB URL here">
+        <button id="render-button">Render</button>
     </div>
 
     <script>
@@ -151,6 +196,51 @@
         }
 
         animate();
+
+        const modelEntity = document.getElementById('model');
+        const assetItem = document.getElementById('defaultModel');
+        const uploadButton = document.getElementById('upload-button');
+        const uploadInput = document.getElementById('upload-input');
+        const renderButton = document.getElementById('render-button');
+        const modelLink = document.getElementById('model-link');
+
+        uploadButton.addEventListener('click', () => {
+            uploadInput.click();
+        });
+
+        uploadInput.addEventListener('change', (event) => {
+            const file = event.target.files[0];
+            const url = URL.createObjectURL(file);
+            loadModel(url);
+            console.log('Model loaded from file:', url);
+        });
+
+        renderButton.addEventListener('click', () => {
+            const url = modelLink.value;
+            if (url) {
+                loadModel(url);
+                console.log('Model loaded from URL:', url);
+            }
+        });
+
+        function loadModel(url) {
+            // Remove existing model entity from the scene
+            const existingModel = document.getElementById('model');
+            existingModel.parentNode.removeChild(existingModel);
+
+            // Create a new entity for the model with the updated src
+            const modelEntity = document.createElement('a-entity');
+            modelEntity.setAttribute('gltf-model', `url(${url})`);
+            modelEntity.setAttribute('position', '0 1.6 -3');
+            modelEntity.setAttribute('scale', '0.05 0.05 0.05');
+            modelEntity.id = 'model';
+
+            // Append the new model entity to the scene
+            const scene = document.getElementById('viewer');
+            scene.appendChild(modelEntity);
+
+            console.log('Model loaded from URL:', url);
+        }
     </script>
 </body>
 </html>
